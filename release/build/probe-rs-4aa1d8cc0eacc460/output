@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-changed=targets
+cargo:rerun-if-env-changed=PROBE_RS_TARGETS_DIR
