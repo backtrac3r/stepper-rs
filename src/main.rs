@@ -4,14 +4,14 @@
 
 extern crate stepper_rs;
 
-use defmt::{println, unwrap};
+use defmt::unwrap;
 use embassy_executor::Spawner;
 use embassy_stm32::{
     adc::{Adc, Resolution},
     gpio::{Input, Level, Output, Pull, Speed},
     Config,
 };
-use embassy_time::{Delay, Duration};
+use embassy_time::Delay;
 use stepper::Motor;
 use stepper_rs::{joy::Joy, stepper};
 use {defmt_rtt as _, panic_probe as _};
@@ -22,8 +22,7 @@ async fn main(spawner: Spawner) {
 
     let dir_pin = Output::new(p.PA9, Level::Low, Speed::VeryHigh);
     let step_pin = Output::new(p.PA8, Level::Low, Speed::VeryHigh);
-    let duration = Duration::from_micros(2000);
-    let motor = Motor::new(dir_pin, step_pin, duration);
+    let motor = Motor::new(dir_pin, step_pin, 2000);
 
     let mut adc = Adc::new(p.ADC1, &mut Delay);
     adc.set_resolution(Resolution::BITS12);

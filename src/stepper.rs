@@ -1,9 +1,13 @@
 use crate::{
-    helpers::{MID, MID_ERROR},
-    joy::Joy,
+    helpers::joy_map,
+    joy::{Joy, JOY_ERROR, MID_VAL},
 };
+use defmt::println;
 use embassy_stm32::gpio::Output;
 use embassy_time::{Duration, Timer};
+
+const MIN_DELAY_MICROS: u64 = 2000;
+const MAX_DELAY_MICROS: u64 = 10000;
 
 pub struct Motor {
     dir_pin: Output<'static>,
@@ -13,11 +17,11 @@ pub struct Motor {
 
 impl Motor {
     #[must_use]
-    pub fn new(dir_pin: Output<'static>, step_pin: Output<'static>, delay: Duration) -> Self {
+    pub fn new(dir_pin: Output<'static>, step_pin: Output<'static>, delay_micros: u64) -> Self {
         Self {
             dir_pin,
             step_pin,
-            delay,
+            delay: Duration::from_micros(delay_micros),
         }
     }
 
@@ -31,6 +35,10 @@ impl Motor {
         self.step_pin.set_low();
     }
 
+    fn update_delay(&mut self, new_delay: u64) {
+        self.delay = Duration::from_micros(new_delay);
+    }
+
     async fn next_step_left(&mut self) {
         if self.dir_pin.is_set_low() {
             self.dir_pin.set_high();
@@ -41,17 +49,34 @@ impl Motor {
         self.step_pin.set_low();
     }
 
+    #[allow(clippy::missing_panics_doc)]
     pub async fn next_step(&mut self, joy: &mut Joy) {
         let y = joy.get_y();
 
-        let abs_diff = y.abs_diff(MID);
+        let abs_diff = y.abs_diff(MID_VAL);
 
-        if abs_diff < MID_ERROR {
+        if abs_diff < JOY_ERROR {
             Timer::after(self.delay).await;
             return;
         }
 
-        if y > MID {
+        let new_delay = joy_map(
+            abs_diff,
+            JOY_ERROR,
+            MID_VAL,
+            MIN_DELAY_MICROS.try_into().unwrap(),
+            MAX_DELAY_MICROS.try_into().unwrap(),
+        );
+        let new_delay: u64 = new_delay.into();
+        let new_delay = MAX_DELAY_MICROS - new_delay + MIN_DELAY_MICROS;
+        println!("y: {}", y);
+        println!("abs_diff: {}", abs_diff);
+        println!("new_delay: {}", new_delay);
+        println!("");
+
+        self.update_delay(new_delay);
+
+        if y > MID_VAL {
             self.next_step_right().await;
         } else {
             self.next_step_left().await;

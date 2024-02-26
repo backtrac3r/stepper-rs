@@ -1,10 +1,18 @@
+use crate::helpers::normalize_x;
 use embassy_stm32::{
     adc::Adc,
     gpio::Input,
     peripherals::{ADC1, PA0, PA1},
 };
 
-use crate::helpers::normalize_x;
+pub const X_MIN: u16 = 0;
+pub const X_MID: u16 = 3028;
+pub const X_MAX: u16 = 4095;
+pub const Y_MIN: u16 = 0;
+pub const Y_MID: u16 = 3028;
+pub const Y_MAX: u16 = 4095;
+pub const JOY_ERROR: u16 = 150;
+pub const MID_VAL: u16 = 2048;
 
 pub struct Joy {
     adc: Adc<'static, ADC1>,

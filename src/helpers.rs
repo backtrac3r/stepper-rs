@@ -1,11 +1,4 @@
-const X_MIN: u16 = 0;
-const X_MID: u16 = 3028;
-const X_MAX: u16 = 4095;
-const Y_MIN: u16 = 0;
-const Y_MID: u16 = 3028;
-const Y_MAX: u16 = 4095;
-pub const MID_ERROR: u16 = 150;
-pub const MID: u16 = 2048;
+use crate::joy::{X_MAX, X_MID, X_MIN, Y_MAX, Y_MID, Y_MIN};
 
 #[allow(clippy::missing_panics_doc)]
 #[must_use]
