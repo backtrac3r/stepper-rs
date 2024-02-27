@@ -35,7 +35,7 @@ async fn main(spawner: Spawner) {
     let joy_filter = Filter::default();
     let joy = Joy::new(adc, joy_button, p.PA0, p.PA1);
 
-    let station = Launcher::new(joy, joy_filter, y_motor);
+    let launcher = Launcher::new(joy, joy_filter, y_motor);
 
-    unwrap!(spawner.spawn(launcher::driver(station)));
+    unwrap!(spawner.spawn(launcher::driver(launcher)));
 }

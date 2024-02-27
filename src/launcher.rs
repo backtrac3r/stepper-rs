@@ -25,16 +25,30 @@ impl Launcher {
 
     #[allow(clippy::missing_panics_doc)]
     pub async fn do_move(&mut self) {
+        // берем показания джостика для мотора, который отвечает за ось Y
         let y = self.joy.get_y();
         let y = self.joy_filter.filter_value(y);
+        println!("y: {}", y);
 
+        // если джостик в дефолтном положении, спим и пропускаем итерацию,
+        // иначе считаем задержку для нового шага мотора
         let abs_diff = y.abs_diff(MID_VAL);
-
         if abs_diff < JOY_ERROR {
             Timer::after(self.y_motor.get_delay()).await;
             return;
         }
 
+        // считаем задержку для нового шага мотора
+        let new_delay = Self::calc_motor_delay(abs_diff);
+
+        // обновляем задержку шага
+        self.y_motor.update_delay(new_delay);
+
+        // делаем шаг
+        self.y_motor.next_step(y).await;
+    }
+
+    fn calc_motor_delay(abs_diff: u16) -> u64 {
         let new_delay = joy_map(
             abs_diff,
             JOY_ERROR,
@@ -42,7 +56,6 @@ impl Launcher {
             MIN_DELAY_MICROS.try_into().unwrap(),
             MAX_DELAY_MICROS.try_into().unwrap(),
         );
-        println!("y: {}", y);
         println!("new_delay: {}", new_delay);
         let new_delay: u64 = new_delay.into();
         let new_delay = mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS);
@@ -50,9 +63,7 @@ impl Launcher {
         println!("new_delay: {}", new_delay);
         println!("");
 
-        self.y_motor.update_delay(new_delay);
-
-        self.y_motor.next_step(y).await;
+        new_delay
     }
 }
 
