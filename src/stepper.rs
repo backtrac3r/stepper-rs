@@ -1,5 +1,5 @@
 use crate::{
-    helpers::joy_map,
+    helpers::{joy_map, mirror_in_range},
     joy::{Joy, JOY_ERROR, MID_VAL},
 };
 use defmt::println;
@@ -63,12 +63,13 @@ impl Motor {
         let new_delay = joy_map(
             abs_diff,
             JOY_ERROR,
-            MID_VAL,
+            MID_VAL + 1,
             MIN_DELAY_MICROS.try_into().unwrap(),
             MAX_DELAY_MICROS.try_into().unwrap(),
         );
+        println!("new_delay: {}", new_delay);
         let new_delay: u64 = new_delay.into();
-        let new_delay = MAX_DELAY_MICROS - new_delay + MIN_DELAY_MICROS;
+        let new_delay = mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS);
         println!("y: {}", y);
         println!("abs_diff: {}", abs_diff);
         println!("new_delay: {}", new_delay);

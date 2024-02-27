@@ -13,7 +13,7 @@ use embassy_stm32::{
 };
 use embassy_time::Delay;
 use stepper::Motor;
-use stepper_rs::{joy::Joy, stepper};
+use stepper_rs::{filter::Filter, joy::Joy, stepper};
 use {defmt_rtt as _, panic_probe as _};
 
 #[embassy_executor::main]
@@ -27,7 +27,8 @@ async fn main(spawner: Spawner) {
     let mut adc = Adc::new(p.ADC1, &mut Delay);
     adc.set_resolution(Resolution::BITS12);
     let joy_button = Input::new(p.PA10, Pull::Up);
-    let joy = Joy::new(adc, joy_button, p.PA0, p.PA1);
+    let filter = Filter::new(0.5);
+    let joy = Joy::new(adc, joy_button, p.PA0, p.PA1, filter);
 
     unwrap!(spawner.spawn(motor_driver(motor, joy)));
 }
