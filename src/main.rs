@@ -22,12 +22,12 @@ async fn main(spawner: Spawner) {
 
     let dir_pin = Output::new(p.PA9, Level::Low, Speed::VeryHigh);
     let step_pin = Output::new(p.PA8, Level::Low, Speed::VeryHigh);
-    let motor = Motor::new(dir_pin, step_pin, 2000);
+    let motor = Motor::new(dir_pin, step_pin);
 
     let mut adc = Adc::new(p.ADC1, &mut Delay);
     adc.set_resolution(Resolution::BITS12);
     let joy_button = Input::new(p.PA10, Pull::Up);
-    let filter = Filter::new(0.5);
+    let filter = Filter::default();
     let joy = Joy::new(adc, joy_button, p.PA0, p.PA1, filter);
 
     unwrap!(spawner.spawn(motor_driver(motor, joy)));

@@ -32,5 +32,5 @@ pub fn normalize_y(val: u16) -> u16 {
 #[must_use]
 #[allow(clippy::missing_panics_doc)]
 pub fn mirror_in_range(val: u64, min: u64, max: u64) -> u64 {
-    val + max - ((max + min) / 2) + min - ((val - min) * 2) + min
+    max - (val - min)
 }

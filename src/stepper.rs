@@ -6,8 +6,8 @@ use defmt::println;
 use embassy_stm32::gpio::Output;
 use embassy_time::{Duration, Timer};
 
-const MIN_DELAY_MICROS: u64 = 2000;
-const MAX_DELAY_MICROS: u64 = 10000;
+const MIN_DELAY_MICROS: u64 = 1400;
+const MAX_DELAY_MICROS: u64 = 15000;
 
 pub struct Motor {
     dir_pin: Output<'static>,
@@ -17,11 +17,11 @@ pub struct Motor {
 
 impl Motor {
     #[must_use]
-    pub fn new(dir_pin: Output<'static>, step_pin: Output<'static>, delay_micros: u64) -> Self {
+    pub fn new(dir_pin: Output<'static>, step_pin: Output<'static>) -> Self {
         Self {
             dir_pin,
             step_pin,
-            delay: Duration::from_micros(delay_micros),
+            delay: Duration::from_micros(MAX_DELAY_MICROS),
         }
     }
 
@@ -67,10 +67,10 @@ impl Motor {
             MIN_DELAY_MICROS.try_into().unwrap(),
             MAX_DELAY_MICROS.try_into().unwrap(),
         );
+        println!("y: {}", y);
         println!("new_delay: {}", new_delay);
         let new_delay: u64 = new_delay.into();
         let new_delay = mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS);
-        println!("y: {}", y);
         println!("abs_diff: {}", abs_diff);
         println!("new_delay: {}", new_delay);
         println!("");
