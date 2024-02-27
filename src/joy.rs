@@ -1,4 +1,4 @@
-use crate::{filter::Filter, helpers::normalize_x};
+use crate::helpers::center_x;
 use embassy_stm32::{
     adc::Adc,
     gpio::Input,
@@ -19,37 +19,27 @@ pub struct Joy {
     button: Input<'static>,
     x_pin: PA0,
     y_pin: PA1,
-    filter: Filter,
 }
 
 impl Joy {
     #[must_use]
-    pub fn new(
-        adc: Adc<'static, ADC1>,
-        button: Input<'static>,
-        x_pin: PA0,
-        y_pin: PA1,
-        filter: Filter,
-    ) -> Self {
+    pub fn new(adc: Adc<'static, ADC1>, button: Input<'static>, x_pin: PA0, y_pin: PA1) -> Self {
         Self {
             adc,
             button,
             x_pin,
             y_pin,
-            filter,
         }
     }
 
     pub fn get_x(&mut self) -> u16 {
-        let mut val = self.adc.read(&mut self.x_pin);
-        val = self.filter.filter_value(val);
-        normalize_x(val)
+        let val = self.adc.read(&mut self.x_pin);
+        center_x(val)
     }
 
     pub fn get_y(&mut self) -> u16 {
-        let mut val = self.adc.read(&mut self.y_pin);
-        val = self.filter.filter_value(val);
-        normalize_x(val)
+        let val = self.adc.read(&mut self.y_pin);
+        center_x(val)
     }
 
     pub fn get_button_state(&mut self) -> bool {

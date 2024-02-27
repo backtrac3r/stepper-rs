@@ -12,7 +12,7 @@ pub fn joy_map(val: u16, in_min: u16, in_max: u16, out_min: u16, out_max: u16) -
 }
 
 #[must_use]
-pub fn normalize_x(val: u16) -> u16 {
+pub fn center_x(val: u16) -> u16 {
     if val < X_MID {
         joy_map(val, X_MIN, X_MID, 0, MID_VAL)
     } else {
@@ -21,7 +21,7 @@ pub fn normalize_x(val: u16) -> u16 {
 }
 
 #[must_use]
-pub fn normalize_y(val: u16) -> u16 {
+pub fn center_y(val: u16) -> u16 {
     if val < Y_MID {
         joy_map(val, Y_MIN, Y_MID, 0, MID_VAL)
     } else {

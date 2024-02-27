@@ -12,8 +12,13 @@ use embassy_stm32::{
     Config,
 };
 use embassy_time::Delay;
-use stepper::Motor;
-use stepper_rs::{filter::Filter, joy::Joy, stepper};
+use stepper::Stepper;
+use stepper_rs::{
+    filter::Filter,
+    joy::Joy,
+    launcher::{self, Launcher},
+    stepper,
+};
 use {defmt_rtt as _, panic_probe as _};
 
 #[embassy_executor::main]
@@ -22,20 +27,15 @@ async fn main(spawner: Spawner) {
 
     let dir_pin = Output::new(p.PA9, Level::Low, Speed::VeryHigh);
     let step_pin = Output::new(p.PA8, Level::Low, Speed::VeryHigh);
-    let motor = Motor::new(dir_pin, step_pin);
+    let y_motor = Stepper::new(dir_pin, step_pin);
 
     let mut adc = Adc::new(p.ADC1, &mut Delay);
     adc.set_resolution(Resolution::BITS12);
     let joy_button = Input::new(p.PA10, Pull::Up);
-    let filter = Filter::default();
-    let joy = Joy::new(adc, joy_button, p.PA0, p.PA1, filter);
+    let joy_filter = Filter::default();
+    let joy = Joy::new(adc, joy_button, p.PA0, p.PA1);
 
-    unwrap!(spawner.spawn(motor_driver(motor, joy)));
-}
+    let station = Launcher::new(joy, joy_filter, y_motor);
 
-#[embassy_executor::task]
-async fn motor_driver(mut motor: Motor, mut joy: Joy) {
-    loop {
-        motor.next_step(&mut joy).await;
-    }
+    unwrap!(spawner.spawn(launcher::driver(station)));
 }
