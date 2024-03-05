@@ -4,7 +4,6 @@ use crate::{
     joy::{Joy, JOY_ERROR, MID_VAL},
     stepper::{Stepper, MAX_DELAY_MICROS, MIN_DELAY_MICROS},
 };
-use defmt::println;
 use embassy_time::Timer;
 
 pub struct Launcher {
@@ -28,7 +27,6 @@ impl Launcher {
         // берем показания джостика для мотора, который отвечает за ось Y
         let y = self.joy.get_y();
         let y = self.joy_filter.filter_value(y);
-        println!("y: {}", y);
 
         // если джостик в дефолтном положении, спим и пропускаем итерацию,
         // иначе считаем задержку для нового шага мотора
@@ -56,12 +54,9 @@ impl Launcher {
             MIN_DELAY_MICROS.try_into().unwrap(),
             MAX_DELAY_MICROS.try_into().unwrap(),
         );
-        println!("new_delay: {}", new_delay);
+
         let new_delay: u64 = new_delay.into();
         let new_delay = mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS);
-        println!("abs_diff: {}", abs_diff);
-        println!("new_delay: {}", new_delay);
-        println!("");
 
         new_delay
     }

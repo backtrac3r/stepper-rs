@@ -2,7 +2,7 @@ use crate::joy::MID_VAL;
 use embassy_stm32::gpio::Output;
 use embassy_time::{Duration, Timer};
 
-pub const MIN_DELAY_MICROS: u64 = 1400;
+pub const MIN_DELAY_MICROS: u64 = 1600;
 pub const MAX_DELAY_MICROS: u64 = 15000;
 
 pub struct Stepper {
