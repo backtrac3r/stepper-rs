@@ -56,9 +56,8 @@ impl Launcher {
         );
 
         let new_delay: u64 = new_delay.into();
-        let new_delay = mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS);
 
-        new_delay
+        mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS)
     }
 }
 
