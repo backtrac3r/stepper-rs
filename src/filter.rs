@@ -19,6 +19,7 @@ impl Filter {
         let abs_diff = val.abs_diff(self.fil_val as u16);
 
         let val: f32 = val.into();
+        //
         let abs_diff: f32 = abs_diff.into();
 
         self.k = if abs_diff > 1.5 { 0.9 } else { 0.03 };
