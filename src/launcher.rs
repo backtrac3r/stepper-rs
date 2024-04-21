@@ -60,10 +60,3 @@ impl Launcher {
         mirror_in_range(new_delay, MIN_DELAY_MICROS, MAX_DELAY_MICROS)
     }
 }
-
-#[embassy_executor::task]
-pub async fn driver(mut l: Launcher) {
-    loop {
-        l.do_move().await;
-    }
-}
